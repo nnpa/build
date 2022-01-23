@@ -1,5 +1,7 @@
 com/example/models/User.class
+com/example/models/UserRepository.class
+com/example/config/MvcConfig.class
+com/example/controllers/UserController.class
 com/example/BasicApplication.class
 com/example/config/WebSecurityConfig.class
 com/example/models/Role.class
-com/example/config/MvcConfig.class
