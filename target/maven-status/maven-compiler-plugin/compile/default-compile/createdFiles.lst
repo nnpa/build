@@ -1,0 +1,5 @@
+com/example/models/User.class
+com/example/BasicApplication.class
+com/example/config/WebSecurityConfig.class
+com/example/models/Role.class
+com/example/config/MvcConfig.class
