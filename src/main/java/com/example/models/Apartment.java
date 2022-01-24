@@ -4,6 +4,7 @@
  */
 package com.example.models;
 
+import java.util.List;
 import java.util.Set;
 import javax.persistence.CollectionTable;
 import javax.persistence.ElementCollection;
@@ -15,6 +16,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 
 /**
  *
@@ -35,6 +37,10 @@ public class Apartment {
     private String phone;
     private Long user_id;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "apartment")
+    private List<Img> images;
+    
+        
     public int getSquare() {
         return square;
     }
@@ -69,9 +75,7 @@ public class Apartment {
     private boolean vip;
     private int create_time;
 
-    @ElementCollection(targetClass = Img.class, fetch = FetchType.EAGER)
-    @CollectionTable(name = "images", joinColumns = @JoinColumn(name = "user_id"))
-    private Set<Img> images;
+
     
     public Long getId() {
         return id;
@@ -137,13 +141,5 @@ public class Apartment {
         this.create_time = create_time;
     }
 
-    public Set<Img> getImages() {
-        return images;
-    }
-
-    public void setImages(Set<Img> images) {
-        this.images = images;
-    }
-    
     
 }
