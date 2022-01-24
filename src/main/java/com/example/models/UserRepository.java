@@ -14,6 +14,14 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface UserRepository extends JpaRepository<User, Long>{
-    @Query(value = "SELECT * FROM User WHERE email = ?1", nativeQuery = true)
+    @Query(value = "SELECT * FROM user WHERE email = ?1", nativeQuery = true)
     User findByEmailAddress(String emailAddress);
+    
+    @Query(value = "SELECT * FROM user WHERE activation_string = ?1", nativeQuery = true)
+    User findByActivationString(String activationString);
+    
+    @Query(value = "SELECT * FROM user WHERE reset_password_string = ?1", nativeQuery = true)
+    User findByResetPasswordString(String resetPasswordString);
+    
+    
 }

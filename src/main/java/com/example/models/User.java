@@ -28,15 +28,24 @@ public class User {
     private String email;
     private String password;
     private boolean active;
-    private boolean avtivated;
+    private boolean activated;
     private String activation_string;
+    private String reset_password_string;
 
-    public boolean isAvtivated() {
-        return avtivated;
+    public String getReset_password_string() {
+        return reset_password_string;
     }
 
-    public void setAvtivated(boolean avtivated) {
-        this.avtivated = avtivated;
+    public void setReset_password_string(String reset_password_string) {
+        this.reset_password_string = reset_password_string;
+    }
+    
+    public boolean isActivated() {
+        return activated;
+    }
+
+    public void setActivated(boolean activated) {
+        this.activated = activated;
     }
 
     public String getActivation_string() {
@@ -50,6 +59,14 @@ public class User {
     @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"))
     @Enumerated(EnumType.STRING)
     private Set<Role> role;
+
+    public Set<Role> getRole() {
+        return role;
+    }
+
+    public void setRole(Set<Role> role) {
+        this.role = role;
+    }
 
     public Long getId() {
         return id;

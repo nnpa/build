@@ -24,8 +24,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		http
                         .csrf().disable()
 			.authorizeRequests()
-                                .antMatchers(HttpMethod.POST, "/postregistration").permitAll()
-                                .antMatchers("/","/home","/registration").permitAll()
+                                .antMatchers(HttpMethod.POST, "/postregistration","/postresetpassword","/postresetpasswordform").permitAll()
+                                .antMatchers("/","/home","/registration","/confirm","/resetpassword","/resetpasswordform").permitAll()
 
                                 .anyRequest().authenticated()
 				.and()
@@ -44,7 +44,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             auth.jdbcAuthentication()
                     .dataSource( dataSource)
                     .passwordEncoder(NoOpPasswordEncoder.getInstance())
-                    .usersByUsernameQuery("select email as username, password, active from user where email = ?")
+                    .usersByUsernameQuery("select email as username, password, active from user where user.activated = 1 AND email = ?")
                     .authoritiesByUsernameQuery("SELECT user.email as username, user_role.role FROM user inner join user_role ON user.id = user_role.user_id where user.email = ?");
                     
         }
