@@ -1,5 +1,15 @@
-    <form method="post" action="/postupload" enctype="multipart/form-data">
-          <input type="file" name="images" multiple class="form-control" accept=".jpg, .jpeg" >
-         <button type="submit" >Upload</button>
-
-    </form>     
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Форма входа</title>
+</head>
+<body>
+<div th:if="${param.error}">
+    Неправильный файл.
+</div>
+<form method="post" action="/postupload" enctype="multipart/form-data">
+<input type="file" name="images" multiple class="form-control" accept=".jpg, .jpeg">
+<button type="submit" >upload</button>
+</form>
+</body>
