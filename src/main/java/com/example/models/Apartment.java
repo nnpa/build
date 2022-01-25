@@ -33,12 +33,32 @@ public class Apartment {
     private int square;
     private int floor;
     private int city;
-    private int address;
+    private String address;
     private String phone;
     private Long user_id;
-
+    private boolean vip;
+    private long create_time;
+    
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "apartment")
     private List<Img> images;
+    
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public List<Img> getImages() {
+        return images;
+    }
+
+    public void setImages(List<Img> images) {
+        this.images = images;
+    }
+
+
     
         
     public int getSquare() {
@@ -65,15 +85,8 @@ public class Apartment {
         this.phone = phone;
     }
     
-    public int getAddress() {
-        return address;
-    }
 
-    public void setAddress(int address) {
-        this.address = address;
-    }
-    private boolean vip;
-    private int create_time;
+
 
 
     
@@ -133,9 +146,14 @@ public class Apartment {
         this.vip = vip;
     }
 
-    public int getCreate_time() {
+    public long getCreate_time() {
         return create_time;
     }
+
+    public void setCreate_time(long create_time) {
+        this.create_time = create_time;
+    }
+
 
     public void setCreate_time(int create_time) {
         this.create_time = create_time;

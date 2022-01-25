@@ -8,44 +8,48 @@
     <body>
         <header th:insert="blocks/header :: header"></header>
         <div class="container">
-            <form method="post" action="/add" enctype="multipart/form-data">
+            <div th:each="error : ${errors}">
+                <div class="alert alert-danger" th:text="${error}" role="alert">
+                </div>
+            </div>
+            <form method="post" action="/postadd" enctype="multipart/form-data">
                 <div class="form-group">
                   <label >Изображения jpeg</label>
-                  <input type="file" name="file[]" multiple class="form-control"accept=".jpg, .jpeg" >
+                  <input type="file" name="images" multiple class="form-control" accept=".jpg, .jpeg" >
                 </div>
                 <div class="form-group">
                     <label for="roomsinput">Комнат</label>
-                    <input type="text" name="rooms" class="form-control" id="roomsinput"  placeholder="Комнат">
+                    <input type="text" th:value="${rooms}" name="rooms" class="form-control" id="roomsinput"  placeholder="Комнат">
                 </div>
                 <div class="form-group">
                     <label for="squareinput">Площадь м²</label>
-                    <input type="text" name="square" class="form-control" id="squareinput"  placeholder="Площадь">
+                    <input type="text" name="square" th:value="${square}" class="form-control" id="squareinput"  placeholder="Площадь">
                 </div>
                 <div class="form-group">
                     <label for="floorinput">Этаж</label>
-                    <input type="text" name="floor" class="form-control" id="floorinput"  placeholder="Этаж">
+                    <input type="text" name="floor" th:value="${floor}" class="form-control" id="floorinput"  placeholder="Этаж">
                 </div>
                 <div class="form-group">
                     <label for="cityinput">Город</label>
-                    <select class="form-select" aria-label="Default select example">
+                    <select name="city" class="form-select" aria-label="Default select example">
                          <option th:each="item: ${cities}" th:value="${item['key']}" th:text="${item['value']}" th:selected="${item['key'] == city}"  />
                     </select>
                 </div>
                 <div class="form-group">
                     <label for="addressinput">Адрес</label>
-                    <input type="text" name="address" class="form-control" id="addressinput"  placeholder="Адрес">
+                    <input type="text" name="address" th:value="${address}" class="form-control" id="addressinput"  placeholder="Адрес">
                 </div>
                 <div class="form-group">
                     <label for="costinput">Цена р.</label>
-                    <input type="text" name="cost" class="form-control" id="costinput"  placeholder="Цена">
+                    <input type="text" name="cost" th:value="${cost}" class="form-control" id="costinput"  placeholder="Цена">
                 </div>
                 <div class="form-group">
                     <label for="phoneinput">Телефон</label>
-                    <input type="text" name="phone" class="form-control" id="phoneinput"  placeholder="Телефон">
+                    <input type="text" name="phone" th:value="${phone}" class="form-control" id="phoneinput"  placeholder="Телефон">
                 </div>
                 <div class="form-group">
                     <label for="descriptioninput">Описание</label>
-                    <textarea name="description" class="form-control" id="descriptioninput" rows="3"></textarea>
+                    <textarea name="description" th:text="${description}" class="form-control" id="descriptioninput" rows="3"></textarea>
                 </div>
                 <div class="form-group">
                     <br>
