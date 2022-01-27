@@ -1,6 +1,7 @@
 com/example/models/Img.class
 com/example/models/Apartment.class
 com/example/models/UserRepository.class
+com/example/models/ImgRepository.class
 com/example/BasicApplication.class
 com/example/controllers/ApartmentController.class
 com/example/models/Role.class

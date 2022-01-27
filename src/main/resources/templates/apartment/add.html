@@ -12,10 +12,16 @@
                 <div class="alert alert-danger" th:text="${error}" role="alert">
                 </div>
             </div>
-            <form method="post" action="/postadd" enctype="multipart/form-data">
+            <div th:each="image : ${images}">
+                <img width="150" height="150" th:src="'/images/' + ${image.path} " ><br>
+                <a  th:href="@{/deleteimage/{id}/(id=${image.id})}">Удалить</a>
+            </div>
+            <form method="post" th:action="${isNew} ? '/postadd' : '/postedit'"  enctype="multipart/form-data">
+                <input type="hidden" th:value="${id}" name="id">
+
                 <div class="form-group">
                   <label >Изображения jpeg</label>
-                  <input type="file" name="images" multiple class="form-control" accept=".jpg, .jpeg" >
+                  <input type="file" name="files" multiple class="form-control" accept=".jpg, .jpeg" >
                 </div>
                 <div class="form-group">
                     <label for="roomsinput">Комнат</label>

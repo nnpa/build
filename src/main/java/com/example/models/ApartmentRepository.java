@@ -4,6 +4,7 @@
  */
 package com.example.models;
 
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -14,7 +15,13 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface ApartmentRepository extends JpaRepository<Apartment, Long>{
+    @Query(value = "SELECT * FROM apartment WHERE id = ?1 AND user_id = ?2", nativeQuery = true)
+    Apartment findByIdAndUserId(Long id, Long user_id);
     
+
+    
+    @Query(value = "SELECT * FROM apartment WHERE user_id = ?1", nativeQuery = true)
+    List<Apartment> findByUserId(Long user_id);
     
     
 }
