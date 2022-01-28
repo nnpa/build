@@ -18,6 +18,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -43,6 +50,9 @@ public class ApartmentController {
 
     @Autowired
     private UserRepository userRepository;
+    
+    @PersistenceContext
+    EntityManager entityManager;
     
     @Autowired
     private ApartmentRepository apartmentRepository; 
@@ -100,6 +110,207 @@ public class ApartmentController {
         cities.put(44, "Улан-Удэ");
         cities.put(45, "Сочи");
     }
+    
+    @GetMapping("/")
+    public String index(
+            @RequestParam(defaultValue = "1", required=false) int city,
+            @RequestParam(required=false) String address,
+            @RequestParam(required=false) String rooms,
+            @RequestParam(required=false) String squarefrom,
+            @RequestParam(required=false) String squareto,
+            @RequestParam(required=false) String costfrom,
+            @RequestParam(required=false) String costto,
+            @RequestParam(defaultValue = "1", required=false) String page,
+            Model model){
+        loadCities();
+        
+        int perPage = 2;
+        String limit = "";
+        int fistResult = 0;
+        
+        if(page != null && !page.equals("1")){
+            
+            fistResult = Integer.parseInt(page) * perPage - 2;
+        }
+        
+        
+        List<Apartment> apartments = getApartments(
+            city,
+            address,
+            rooms,
+            squarefrom,
+            squareto,
+            costfrom,
+            costto,
+            fistResult,
+            perPage
+        );
+        
+        Long count = getApartmentCount(
+            city,
+            address,
+            rooms,
+            squarefrom,
+            squareto,
+            costfrom,
+            costto
+        );
+        
+        int pages = 1;
+        
+        pages = (int) (count/perPage);
+        
+        List<Integer> pager = new ArrayList<Integer>();
+        if(pages > 1){
+            for (int i = 1; i <= pages; i = i + 1){
+                pager.add(i);
+            }
+        }
+        
+        String href = "/?city=" + city;
+        
+        if(address != null && address.length() >= 1){
+            href = href + "&address=" + address;
+        }
+        if(rooms != null && rooms.length() >= 1){
+            href = href + "&rooms=" + rooms;
+        }
+        if(squarefrom != null && squarefrom.length() >= 1){
+            href = href + "&squarefrom=" + squarefrom;
+        }
+        if(squareto != null && squareto.length() >= 1){
+            href = href + "&squareto=" + squareto;
+        }
+        if(costfrom != null && costfrom.length() >= 1){
+            href = href + "&costfrom=" + costfrom;
+        }
+        if(costto != null && costto.length() >= 1){
+            href = href + "&costto=" + costto;
+        }
+        href = href + "&page=";
+        
+        model.addAttribute("address", address);
+        model.addAttribute("rooms", rooms);
+        model.addAttribute("squarefrom", squarefrom);
+        model.addAttribute("squareto", squareto);
+        model.addAttribute("costfrom", costfrom);
+        model.addAttribute("costto", costto);
+
+        model.addAttribute("href", href);
+
+        model.addAttribute("apartments", apartments);
+        model.addAttribute("city", city);
+        model.addAttribute("pager", pager);
+        model.addAttribute("page", Integer.parseInt(page));
+        model.addAttribute("cities", cities);
+        
+        return "index";
+    }
+    
+    private Long getApartmentCount(
+        int city,
+        String address,
+        String rooms,
+        String squarefrom,
+        String squareto,
+        String costfrom,
+        String costto
+    ){
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Long> query = cb.createQuery(Long.class);
+        
+        
+        Root<Apartment> root = query.from(Apartment.class);
+        
+        List<Predicate> predicates = new ArrayList<>();
+        
+        predicates.add((Predicate) cb.equal(root.get("city"), city));
+        
+        if(address != null && address.length() >= 1){
+            predicates.add((Predicate) cb.like(root.get("address"), "%" + address + "%"));
+        }
+        if(rooms != null && rooms.length() >= 1){
+            predicates.add((Predicate) cb.equal(root.get("rooms"), rooms));
+        }
+        if(squarefrom != null && squarefrom.length() >= 1){
+            predicates.add((Predicate) cb.greaterThan(root.get("square"), squarefrom));
+        }
+        if(squareto != null && squareto.length() >= 1){
+            predicates.add((Predicate) cb.lessThan(root.get("square"), squareto));
+        }
+        
+        if(costfrom != null && costfrom.length() >= 1){
+            predicates.add((Predicate) cb.greaterThan(root.get("cost"), costfrom));
+        }
+        if(costto != null && costto.length() >= 1){
+            predicates.add((Predicate) cb.lessThan(root.get("cost"), costto));
+        }
+        
+        query.select(cb.count(root)).where(cb.and((javax.persistence.criteria.Predicate[]) predicates.toArray(new Predicate[predicates.size()])));
+
+        Long apartments = entityManager
+                .createQuery(query)
+                .getSingleResult();
+        return  apartments;
+    }
+    
+    private List<Apartment> getApartments(
+            int city,
+            String address,
+            String rooms,
+            String squarefrom,
+            String squareto,
+            String costfrom,
+            String costto,
+            int fistResult,
+            int perPage
+    ){
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Apartment> query = cb.createQuery(Apartment.class);
+        
+        Root<Apartment> root = query.from(Apartment.class);
+        List<Order> orderList = new ArrayList();
+        orderList.add(cb.asc(root.get("create_time")));
+        orderList.add(cb.asc(root.get("vip")));
+
+        query.orderBy(orderList);
+
+       
+        List<Predicate> predicates = new ArrayList<>();
+        predicates.add((Predicate) cb.equal(root.get("city"), city));
+
+        if(address != null && address.length() >= 1){
+            predicates.add((Predicate) cb.like(root.get("address"), "%" + address + "%"));
+        }
+        if(rooms != null && rooms.length() >= 1){
+            predicates.add((Predicate) cb.equal(root.get("rooms"), rooms));
+        }
+        if(squarefrom != null && squarefrom.length() >= 1){
+            System.out.println("");
+            predicates.add((Predicate) cb.greaterThan(root.get("square"), squarefrom));
+        }
+        if(squareto != null && squareto.length() >= 1){
+            predicates.add((Predicate) cb.lessThan(root.get("square"), squareto));
+        }
+        
+        if(costfrom != null && costfrom.length() >= 1){
+            predicates.add((Predicate) cb.greaterThan(root.get("cost"), costfrom));
+        }
+        if(costto != null && costto.length() >= 1){
+            predicates.add((Predicate) cb.lessThan(root.get("cost"), costto));
+        }
+        
+        query.select(root).where(cb.and((javax.persistence.criteria.Predicate[]) predicates.toArray(new Predicate[predicates.size()])));
+
+        List<Apartment> apartments = entityManager
+                .createQuery(query)
+                .setFirstResult(fistResult)
+                .setMaxResults(perPage)
+                .getResultList();
+        
+        return  apartments;
+    }
+
     
     @GetMapping("/deleteimage/{id}/")
     public String deleteimage(@PathVariable Long id,Principal principal,Model model,HttpServletRequest request) {
@@ -169,7 +380,7 @@ public class ApartmentController {
             List<String> errors = new ArrayList<String>();
             if(rooms < 1){
                 errors.add("Комнат не заполенено");
-}
+            }
             if(square < 1){
                 errors.add("Площадь не заполенено");
             }

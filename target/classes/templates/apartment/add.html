@@ -24,6 +24,16 @@
                   <input type="file" name="files" multiple class="form-control" accept=".jpg, .jpeg" >
                 </div>
                 <div class="form-group">
+                    <label for="cityinput">Город</label>
+                    <select name="city" class="form-select" aria-label="Default select example">
+                         <option th:each="item: ${cities}" th:value="${item['key']}" th:text="${item['value']}" th:selected="${item['key'] == city}"  />
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="addressinput">Адрес</label>
+                    <input type="text" name="address" th:value="${address}" class="form-control" id="addressinput"  placeholder="Адрес">
+                </div>
+                <div class="form-group">
                     <label for="roomsinput">Комнат</label>
                     <input type="text" th:value="${rooms}" name="rooms" class="form-control" id="roomsinput"  placeholder="Комнат">
                 </div>
@@ -35,16 +45,7 @@
                     <label for="floorinput">Этаж</label>
                     <input type="text" name="floor" th:value="${floor}" class="form-control" id="floorinput"  placeholder="Этаж">
                 </div>
-                <div class="form-group">
-                    <label for="cityinput">Город</label>
-                    <select name="city" class="form-select" aria-label="Default select example">
-                         <option th:each="item: ${cities}" th:value="${item['key']}" th:text="${item['value']}" th:selected="${item['key'] == city}"  />
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="addressinput">Адрес</label>
-                    <input type="text" name="address" th:value="${address}" class="form-control" id="addressinput"  placeholder="Адрес">
-                </div>
+                
                 <div class="form-group">
                     <label for="costinput">Цена р.</label>
                     <input type="text" name="cost" th:value="${cost}" class="form-control" id="costinput"  placeholder="Цена">
