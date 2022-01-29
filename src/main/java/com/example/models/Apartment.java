@@ -7,6 +7,7 @@ package com.example.models;
 import java.util.List;
 import java.util.Set;
 import javax.persistence.CollectionTable;
+import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -29,7 +30,10 @@ public class Apartment {
     private Long id;
     private int rooms;
     private int cost;
+    
+    @Column(columnDefinition = "TEXT")
     private String description;
+    
     private int square;
     private int floor;
     private int city;

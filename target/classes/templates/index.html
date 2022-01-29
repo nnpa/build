@@ -2,13 +2,38 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
       xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
     <head>
-        <title>Spring Security Example </title>
+        <title th:text="${title}"></title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+        <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+        <script type="text/javascript">
+            $(document).ready(function() {
+                $( ".gal" ).hover(
+                    function() {
+                      $( this ).width(350);
+                      $( this ).height(350);
+
+                    }, function() {
+                      $( this ).width(200);
+                      $( this ).height(200);
+                    }
+                  );
+                  
+                $(".phone").click(function(){
+                    var id = $(this).attr("id");
+                    var id_array = id.split("_");
+                    var apartment_id = id_array[1];
+                    $.get( "/getphone/" + apartment_id, function( data ) {
+                        $( "#phone_"+ apartment_id).html( data );
+                    });
+                });
+
+            });
+        </script>
     </head>
     <body>
         <header th:insert="blocks/header :: header"></header>
         <div class="container">
-            
+            <h3 th:text="${title}"></h3>
             <form method="get" action="/">
                 <div class="form-group">
                     <label for="cityinput">Город</label>
@@ -43,12 +68,17 @@
                 </div>
             </form>
             
-            <div clas="row" th:each="apartment: ${apartments}">
-                <a th:href="@{/view/{id}/(id=${apartment.id})}" th:text="'Квартира ' + ${apartment.rooms} + ' комнатная ' + ${apartment.rooms} + 'м² ' + ${apartment.address} + ' ' + ${apartment.cost} + 'р'"></a>
-                <br>
-                <div clas="row" th:each="image: ${apartment.getImages()}">
-                    <img width="150" height="150" th:src="'/images/' + ${image.path} " ><br>
+            <div clas="row p-5" th:each="apartment: ${apartments}">
+                <div class="row">                    
+                    <div class="form-group">
+                    <a style="float:left;" target="_blank" th:href="@{/view/{id}/(id=${apartment.id})}" th:text="'Квартира ' + ${apartment.rooms} + ' комнатная ' + ${apartment.rooms} + 'м² ' + ${apartment.address} + ' ' + ${apartment.cost} + 'р'"></a>
+                    <button type="button" style="float:right;" class="phone btn btn-success btn-sm" th:id="'phone_' + ${apartment.id}">Телефон</button>
+                    </div>
                 </div>
+                <div class="row">
+                    <img th:each="image: ${apartment.getImages()}" class="gal"  style="float:left;margin: 5px;width:200px;height: 200px;" th:src="'/images/' + ${image.path} " ><br>
+                </div>
+                <hr>
             </div>
             
             <div class="row">

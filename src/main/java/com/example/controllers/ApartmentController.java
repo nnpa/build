@@ -10,14 +10,19 @@ import com.example.models.Img;
 import com.example.models.ImgRepository;
 import com.example.models.User;
 import com.example.models.UserRepository;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import javax.imageio.ImageIO;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -26,6 +31,7 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -111,6 +117,26 @@ public class ApartmentController {
         cities.put(45, "Сочи");
     }
     
+     @GetMapping("/view/{id}")
+     public String view(@PathVariable Long id,Model model){
+         Optional<Apartment> apartmentOptional = apartmentRepository.findById(id);
+         loadCities();
+
+        if (!apartmentOptional.isPresent()){
+            return "redirect:/";
+
+        }
+        
+        Apartment apartment = apartmentOptional.get();
+        String cityString = cities.get((int)apartment.getCity());
+
+        String title = "Квартира " + apartment.getRooms() + " комнатаня " + apartment.getSquare() + " м² " + cityString ;
+        model.addAttribute("apartment", apartment);
+        model.addAttribute("title", title);
+
+        return "apartment/view";
+     }
+    
     @GetMapping("/")
     public String index(
             @RequestParam(defaultValue = "1", required=false) int city,
@@ -124,7 +150,10 @@ public class ApartmentController {
             Model model){
         loadCities();
         
-        int perPage = 2;
+        String cityString = cities.get((int)city);
+        model.addAttribute("title", "Купить квартиру " + cityString);
+
+        int perPage = 10;
         String limit = "";
         int fistResult = 0;
         
@@ -360,6 +389,23 @@ public class ApartmentController {
         return "apartment/add";
     }
     
+    private static byte[] readContentIntoByteArray(File file){
+        FileInputStream fileInputStream = null;
+        byte[] bFile = new byte[(int) file.length()];
+        try
+        {
+           //convert file into array of bytes
+           fileInputStream = new FileInputStream(file);
+           fileInputStream.read(bFile);
+           fileInputStream.close();
+        }
+        catch (Exception e)
+        {
+           e.printStackTrace();
+        }
+        return bFile;
+    }
+    
     @PostMapping("/postedit")
     public String postadd(
                 @RequestParam("files") MultipartFile[] files,
@@ -431,8 +477,9 @@ public class ApartmentController {
                     File smallUploadedFile = new File(uploadPath + "/" + smallResultFilename);
 
                     file.transferTo(uploadedFile);
+                    BufferedImage originalImage = ImageIO.read(new ByteArrayInputStream(readContentIntoByteArray(uploadedFile)));
 
-                    Thumbnails.of(uploadedFile)
+                    Thumbnails.of(originalImage)
                             .size(500, 500)
                             .toFile(smallUploadedFile);
                     uploadedFile.delete();
@@ -464,6 +511,25 @@ public class ApartmentController {
             
         
     }
+    
+    @GetMapping(value = "/getphone/{id}")
+    public void getphone(@PathVariable Long id,HttpServletResponse response) throws IOException {
+        response.addHeader("content-type", "text/plain; charset=utf-8");
+        response.setStatus(200);
+        PrintWriter out = response.getWriter();
+
+        
+        Optional<Apartment> apartmentOptional = apartmentRepository.findById(id);
+        
+        if (apartmentOptional.isPresent()){
+            Apartment apartment = apartmentOptional.get();
+            out.println(apartment.getPhone());
+            return;
+        }
+        
+        out.println("no phone");
+    }
+    
     
     @GetMapping("/edit/{id}")
     public String edit(@PathVariable Long id,Model model,Principal principal) {
@@ -575,8 +641,9 @@ public class ApartmentController {
                 File smallUploadedFile = new File(uploadPath + "/" + smallResultFilename);
 
                 file.transferTo(uploadedFile);
-                
-                Thumbnails.of(uploadedFile)
+                BufferedImage originalImage = ImageIO.read(new ByteArrayInputStream(readContentIntoByteArray(uploadedFile)));
+
+                Thumbnails.of(originalImage)
 			.size(500, 500)
 			.toFile(smallUploadedFile);
                 uploadedFile.delete();
