@@ -133,6 +133,8 @@ public class ApartmentController {
         String title = "Квартира " + apartment.getRooms() + " комнатаня " + apartment.getSquare() + " м² " + cityString ;
         model.addAttribute("apartment", apartment);
         model.addAttribute("title", title);
+        model.addAttribute("description", title);
+        model.addAttribute("keywords", title);
 
         return "apartment/view";
      }
@@ -152,6 +154,8 @@ public class ApartmentController {
         
         String cityString = cities.get((int)city);
         model.addAttribute("title", "Купить квартиру " + cityString);
+        model.addAttribute("description", "На нашем сайте вы можете купить квартиру " + cityString);
+        model.addAttribute("keywords", "купить квартиру " + cityString);
 
         int perPage = 10;
         String limit = "";
@@ -299,8 +303,8 @@ public class ApartmentController {
         
         Root<Apartment> root = query.from(Apartment.class);
         List<Order> orderList = new ArrayList();
-        orderList.add(cb.asc(root.get("create_time")));
-        orderList.add(cb.asc(root.get("vip")));
+        orderList.add(cb.desc(root.get("vip")));
+        orderList.add(cb.desc(root.get("create_time")));
 
         query.orderBy(orderList);
 

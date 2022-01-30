@@ -146,7 +146,7 @@ public class UserController {
                 JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
                 mailSender.setHost("smtp.gmail.com");
                 mailSender.setPort(587);
-                mailSender.setUsername("springbootemailsender777@gmail.com");
+                mailSender.setUsername("springbootemailsender111@gmail.com");
                 mailSender.setPassword("g02091988");
 
                 Properties properties = new Properties();
@@ -170,6 +170,8 @@ public class UserController {
                 helper.setText("<a href='" + url + "/resetpasswordform?uid=" + uuid + "'>Сбросить пароль</a>", html);
                 
                 mailSender.send(message);
+                return "user/resetpassword_emailsend";
+
             }
             model.addAttribute("errors", errors);
             return "user/resetpassword_form";
@@ -238,7 +240,7 @@ public class UserController {
                     JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
                     mailSender.setHost("smtp.gmail.com");
                     mailSender.setPort(587);
-                    mailSender.setUsername("springbootemailsender777@gmail.com");
+                    mailSender.setUsername("springbootemailsender111@gmail.com");
                     mailSender.setPassword("g02091988");
 
                     Properties properties = new Properties();
